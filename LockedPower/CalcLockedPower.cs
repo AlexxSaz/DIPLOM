@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LockedPowerLibrary;
 using System.IO;
+using Microsoft.Office.Interop.Excel;
 
 namespace LockedPower
 {
@@ -17,7 +18,7 @@ namespace LockedPower
         /// <returns>Массив имен</returns>
         private static string[] TextReader(string path)
         {
-            path = "Resources\\" + path;
+            path = @"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\" + path;
 
             var streamReader = new StreamReader(path);
 
@@ -38,23 +39,37 @@ namespace LockedPower
             var energySystem = TextReader("EnergySystems.txt");
             var parametr = TextReader("NameOfParameters.txt");
 
-            Console.WriteLine("Для поиска сечения " + section + " нажмите любую кнопку.");
-            Console.ReadKey();
+            Application reportExcel = new Application();
+            Workbook reportWb = reportExcel.Workbooks.Add();
+            Worksheet reportWs = reportWb.Worksheets[1];
 
-            int MDP = 0;
-            double paramValue = 0;
+            reportWs.Name = "Расчет невыпускаемой мощности";
+
+            
+
+            int counter = 0;
             try
             {
-                MDP = Locked.MDPSearcher(@"C:\Users\Александр\Desktop\ДИПЛОМ\Исходные данные\ppbr(a)_22012020_1.xls", 1, section);
-                paramValue = Locked.ParametrsSearcher(@"C:\Users\Александр\Desktop\ДИПЛОМ\Исходные данные\balance10-29-01-2020.xlsx", "Устан. мощн.", energySystem);
+                for (int i = 0; i < energySystem.Length; i++)
+                {
+                    reportWs.Cells[1 + counter+i, 1] = energySystem[i];
+
+                    for (int j = 0; j < parametr.Length; j++)
+                    {
+                        reportWs.Cells[1 + counter + j, 2] = parametr[j];
+                        reportWs.Cells[1 + counter + j, 3] = DataSearch.ParametrsSearcher(@"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\balance10-29-01-2020.xlsx", parametr[j], energySystem[i]);
+                        counter++;
+                    }
+                }
             }
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.Message);
             }
+            reportWb.SaveAs(@"C:\Users\Александр\Desktop\МусорницаОтчетов\2.xlsx");
 
-            Console.WriteLine("Значение МДП для сечения " + section + " равно: " + MDP.ToString());
-            Console.WriteLine("Установленная мощность энергосистемы " + energySystem + " равно: " + paramValue.ToString());
+            reportWb.Close();
+
             Console.ReadKey();
         }
     }

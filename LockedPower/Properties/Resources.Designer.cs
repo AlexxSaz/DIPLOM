@@ -59,5 +59,79 @@ namespace LockedPower.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] balance10_29_01_2020 {
+            get {
+                object obj = ResourceManager.GetObject("balance10_29_01_2020", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Омской области
+        ///Новосибирской области
+        ///Республики Алтай и Алтайского края
+        ///Кемеровской области
+        ///Томской области
+        ///Республики Хакасия
+        ///Красноярского края и Республики Тыва (по территории Красноярского края)
+        ///Красноярского края и Республики Тыва (по территории Республики Тыва)
+        ///Иркутской области
+        ///Республики Бурятии
+        ///Забайкальского края
+        ///ОЭС Сибири.
+        /// </summary>
+        internal static string EnergySystems {
+            get {
+                return ResourceManager.GetString("EnergySystems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Устан. мощн.
+        ///Огран.
+        ///Расп. мощн.
+        ///Всего
+        ///ВПр
+        ///Рек
+        ///КС
+        ///ЗРР
+        ///Раб. мощн.
+        ///Ген-ция
+        ///Вращ. резерв ТЭС
+        ///Хол. резерв ТЭС
+        ///Перегруз
+        ///Час совм. максимума.
+        /// </summary>
+        internal static string NameOfParameters {
+            get {
+                return ResourceManager.GetString("NameOfParameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] ppbr_a__22012020_1 {
+            get {
+                object obj = ResourceManager.GetObject("ppbr_a__22012020_1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Бурятия - Иркутск
+        ///Камала - Красноярская на запад
+        ///Назаровское на запад
+        ///Кузбасс-Запад.
+        /// </summary>
+        internal static string SectionsName {
+            get {
+                return ResourceManager.GetString("SectionsName", resourceCulture);
+            }
+        }
     }
 }
