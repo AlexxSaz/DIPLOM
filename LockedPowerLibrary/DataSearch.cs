@@ -66,7 +66,7 @@ namespace LockedPowerLibrary
             for (int i = 0; i < section.Length; i++)
             {
                 Range rangeOfSection = excelFile.Cells.Find(section[i], Type.Missing,
-                    XlFindLookIn.xlValues, XlLookAt.xlPart);
+                    XlFindLookIn.xlValues, XlLookAt.xlWhole);
                 if (rangeOfSection == null)
                 {
                     throw new ArgumentException("Нет такой ячейки!");
@@ -110,7 +110,7 @@ namespace LockedPowerLibrary
 
             for (int i = 0; i < energySystem.Length; i++)
             {
-                Range rangeOfSystem = excelFile.Cells.Find(energySystem[i], Type.Missing, XlFindLookIn.xlValues, XlLookAt.xlPart);
+                Range rangeOfSystem = excelFile.Cells.Find(energySystem[i], Type.Missing, XlFindLookIn.xlValues, XlLookAt.xlWhole);
 
                 for (int j = 0; j < parametr.Length; j++)
                 {
@@ -129,7 +129,6 @@ namespace LockedPowerLibrary
                     }
                     else
                     {
-                        //continue;
                         throw new ArgumentException("Для ЭС " + energySystem[i] +
                             " значение в ячейке параметра " + parametr[j] +
                             " не является числом");
