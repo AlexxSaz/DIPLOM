@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LockedPowerLibrary;
 using Microsoft.Office.Interop.Excel;
+using System.Diagnostics;
 
 namespace LockedPower
 {
@@ -52,6 +53,11 @@ namespace LockedPower
             reportWb = null;
             reportWs = null;
             GC.Collect();
+
+            foreach (var process in Process.GetProcessesByName("EXCEL"))
+            {
+                process.Kill();
+            }
 
             Console.ReadKey();
         }
