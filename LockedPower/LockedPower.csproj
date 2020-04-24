@@ -55,6 +55,7 @@
     <None Include="App.config" />
     <None Include="Resources\balance10-29-01-2020.xlsx" />
     <None Include="Resources\ppbr%28a%29_22012020_1.xls" />
+    <None Include="Resources\Shablon.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LockedPowerLibrary\LockedPowerLibrary.csproj">
@@ -67,15 +68,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\EnergySystems.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\NameOfParameters.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SectionsName.txt" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">

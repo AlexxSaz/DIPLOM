@@ -4,60 +4,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LockedPowerLibrary;
-using System.IO;
 using Microsoft.Office.Interop.Excel;
 
 namespace LockedPower
 {
     class CalcLockedPower
     {
-        /// <summary>
-        /// Получить массив имен из файла
-        /// </summary>
-        /// <param name="path">Путь к файлу</param>
-        /// <returns>Массив имен</returns>
-        private static string[] TextReader(string path)
-        {
-            path = @"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\" + path;
 
-            var streamReader = new StreamReader(path);
-
-            var str = new string[File.ReadAllLines(path).Length];
-
-            for (int i = 0; i < str.Length; i++)
-            {
-                str[i] = Convert.ToString(streamReader.ReadLine());
-            }
-            streamReader.Close();
-
-            return str;
-        }
 
         static void Main(string[] args)
         {
-            var section = TextReader("SectionsName.txt");
-            var energySystem = TextReader("EnergySystems.txt");
-            var parametr = TextReader("NameOfParameters.txt");
-
             Application reportExcel = new Application();
-            Workbook reportWb = reportExcel.Workbooks.Add();
+            Workbook reportWb = reportExcel.Workbooks.Open(@"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\Shablon.xlsx");
             Worksheet reportWs = reportWb.Worksheets[1];
 
             reportWs.Name = "Расчет невыпускаемой мощности";
-
-            
+            reportWs.Cells[1, 1] = "Дата создания отчета: " + DateTime.Now.ToString();
 
             int counter = 0;
             try
             {
-                for (int i = 0; i < energySystem.Length; i++)
-                {
-                    reportWs.Cells[1 + counter+i, 1] = energySystem[i];
+                var valueMDP = DataSearch.MDPSearcher(@"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\ppbr(a)_22012020_1.xls", 2);
+                var valueParametr = DataSearch.ParametrsSearcher(@"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\balance10-29-01-2020.xlsx");
 
-                    for (int j = 0; j < parametr.Length; j++)
+                //for (int i = 0; i < valueMDP.Length; i++)
+                //{
+                //    reportWs.Cells[i + 1, 1] = valueMDP[i];
+                //}
+                for (int i = 0; i < valueParametr.GetLength(0); i++)
+                {
+                    for (int j = 0; j < valueParametr.GetLength(1); j++)
                     {
-                        reportWs.Cells[1 + counter + j, 2] = parametr[j];
-                        reportWs.Cells[1 + counter + j, 3] = DataSearch.ParametrsSearcher(@"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\balance10-29-01-2020.xlsx", parametr[j], energySystem[i]);
+                        reportWs.Cells[counter + 3, 3] = valueParametr[i, j];
                         counter++;
                     }
                 }
@@ -66,9 +44,14 @@ namespace LockedPower
             {
                 Console.WriteLine(e.Message);
             }
-            reportWb.SaveAs(@"C:\Users\Александр\Desktop\МусорницаОтчетов\2.xlsx");
 
-            reportWb.Close();
+            reportWb.SaveAs(@"C:\Users\Александр\Desktop\МусорницаОтчетов\2.xlsx");
+            reportWb.Close(false);
+            reportExcel.Quit();
+            reportExcel = null;
+            reportWb = null;
+            reportWs = null;
+            GC.Collect();
 
             Console.ReadKey();
         }
