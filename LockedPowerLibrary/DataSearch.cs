@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Office.Interop.Excel;
+using System.IO;
 
 namespace LockedPowerLibrary
 {
@@ -12,6 +13,28 @@ namespace LockedPowerLibrary
     /// </summary>
     public class DataSearch
     {
+        /// <summary>
+        /// Получить массив имен из файла
+        /// </summary>
+        /// <param name="path">Путь к файлу</param>
+        /// <returns>Массив имен</returns>
+        private static string[] TextReader(string path)
+        {
+            path = @"E:\Programms\С# Progs\DIPLOM\LockedPowerLibrary\Resources\" + path;
+
+            var streamReader = new StreamReader(path);
+
+            var str = new string[File.ReadAllLines(path).Length];
+
+            for (int i = 0; i < str.Length; i++)
+            {
+                str[i] = Convert.ToString(streamReader.ReadLine());
+            }
+            streamReader.Close();
+
+            return str;
+        }
+
         /// <summary>
         /// Задание основных параметров файла Excel
         /// </summary>
@@ -34,25 +57,39 @@ namespace LockedPowerLibrary
         /// <param name="hour">Расчетный час</param>
         /// <param name="section">Рассматриваемое сечение</param>
         /// <returns>Искомое значение МДП</returns>
-        public static int MDPSearcher(string filePath, int hour, string section)
+        public static int[] MDPSearcher(string filePath, int hour)
         {
             Application excelFile = WorkbookBaseData(filePath, "8 КС (2)");
+            var section = TextReader("SectionsName.txt");
+            var valueMDP = new int[section.Length];
 
-            Range rangeOfSection = excelFile.Cells.Find(section, Type.Missing, XlFindLookIn.xlValues, XlLookAt.xlPart);
-            if (rangeOfSection == null)
+            for (int i = 0; i < section.Length; i++)
             {
-                throw new ArgumentException("Нет такой ячейки!");
-            }
+                Range rangeOfSection = excelFile.Cells.Find(section[i], Type.Missing,
+                    XlFindLookIn.xlValues, XlLookAt.xlPart);
+                if (rangeOfSection == null)
+                {
+                    throw new ArgumentException("Нет такой ячейки!");
+                }
 
-            Range rangeOfMDP = excelFile.Cells[rangeOfSection.Row + 1 + hour,
-                rangeOfSection.Column];
+                Range rangeOfMDP = excelFile.Cells[rangeOfSection.Row + 1 + hour,
+                    rangeOfSection.Column];
 
-            if (!int.TryParse(rangeOfMDP.Value2.ToString(), out int valueMDP))
-            {
-                throw new ArgumentException("Значение в ячейке не явлется числом");
+                if (int.TryParse(rangeOfMDP.Value2.ToString(), out int value))
+                {
+                    valueMDP[i] = value;
+                }
+                else
+                {
+                    throw new ArgumentException("Для сечения " + section[i] +
+                        " значение в ячейке не является числом");
+                }
             }
 
             excelFile.Workbooks.Close();
+            excelFile.Quit();
+            excelFile = null;
+            GC.Collect();
 
             return valueMDP;
         }
@@ -64,28 +101,48 @@ namespace LockedPowerLibrary
         /// <param name="nameOfParam">Название параметра</param>
         /// <param name="nameOfSystem">Название энергосистемы</param>
         /// <returns>Значение рассматриваемого параметра</returns>
-        public static double ParametrsSearcher(string filePath, string nameOfParam, string nameOfSystem)
+        public static double[,] ParametrsSearcher(string filePath)
         {
             Application excelFile = WorkbookBaseData(filePath, "Баланс мощности");
+            var energySystem = TextReader("EnergySystems.txt");
+            var parametr = TextReader("NameOfParameters.txt");
+            var paramValue = new double[energySystem.Length, parametr.Length];
 
-            Range rangeOfParam = excelFile.Cells.Find(nameOfParam, Type.Missing, XlFindLookIn.xlValues, XlLookAt.xlPart);
-            Range rangeOfSystem = excelFile.Cells.Find(nameOfSystem, Type.Missing, XlFindLookIn.xlValues, XlLookAt.xlPart);
-            if (rangeOfParam == null || rangeOfSystem == null)
+            for (int i = 0; i < energySystem.Length; i++)
             {
-                throw new ArgumentException("Нет такой ячейки!");
-            }
+                Range rangeOfSystem = excelFile.Cells.Find(energySystem[i], Type.Missing, XlFindLookIn.xlValues, XlLookAt.xlPart);
 
-            Range rngOfParamValue = excelFile.Cells[rangeOfSystem.Row,
-                rangeOfParam.Column];
+                for (int j = 0; j < parametr.Length; j++)
+                {
+                    Range rangeOfParam = excelFile.Cells.Find(parametr[j], Type.Missing, XlFindLookIn.xlValues, XlLookAt.xlWhole);
+                    if (rangeOfParam == null || rangeOfSystem == null)
+                    {
+                        throw new ArgumentException("Нет такой ячейки!");
+                    }
 
-            if (!double.TryParse(rngOfParamValue.Value2.ToString(), out double paramValue))
-            {
-                throw new ArgumentException("Значение в ячейке не явлется числом");
+                    Range rngOfParamValue = excelFile.Cells[rangeOfSystem.Row,
+                        rangeOfParam.Column];
+
+                    if (double.TryParse(rngOfParamValue.Value2.ToString(), out double value))
+                    {
+                        paramValue[i, j] = Math.Round(value, 2);
+                    }
+                    else
+                    {
+                        //continue;
+                        throw new ArgumentException("Для ЭС " + energySystem[i] +
+                            " значение в ячейке параметра " + parametr[j] +
+                            " не является числом");
+                    }
+                }
             }
 
             excelFile.Workbooks.Close();
+            excelFile.Quit();
+            excelFile = null;
+            GC.Collect();
 
-            return Math.Round(paramValue, 2);
+            return paramValue;
         }
     }
 }
