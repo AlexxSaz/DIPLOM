@@ -143,5 +143,44 @@ namespace LockedPowerLibrary
 
             return paramValue;
         }
+
+        /// <summary>
+        /// Поиск параметра в шаблоне отчета
+        /// </summary>
+        /// <param name="worksheet">Лист отчета</param>
+        /// <param name="counter">Строка, после которой ведется поиск</param>
+        /// <param name="nameOfParam">Название искомого параметра</param>
+        /// <returns>Значение параметра</returns>
+        private static double SearchValueInShablon(Worksheet worksheet,
+            int counter, string nameOfParam)
+        {
+            Range paramRange = worksheet.Cells.Find(nameOfParam,
+                worksheet.Cells[counter + 1, 3],
+                XlFindLookIn.xlValues, XlLookAt.xlWhole);
+            if (paramRange == null)
+            {
+                throw new ArgumentException("Нет такой ячейки для расчета резерва!");
+            }
+
+            double.TryParse(worksheet.Cells[paramRange.Row,
+                paramRange.Column + 1].Value2.ToString(),
+                out double value);
+
+            return value;
+        }
+
+        /// <summary>
+        /// Расчет резерва мощности
+        /// </summary>
+        /// <param name="worksheet">Лист для расчета</param>
+        /// <param name="counter">Строка, после которой ведется поиск</param>
+        /// <returns>Значение резерва мощности в ЭС</returns>
+        public static double ReserveCalc(Worksheet worksheet, int counter)
+        {
+            double valueWorkPower = SearchValueInShablon(worksheet, counter, "Рабочая мощность");
+            double valueLoad = SearchValueInShablon(worksheet, counter, "Потребление");
+
+            return valueWorkPower - valueLoad;
+        }
     }
 }
