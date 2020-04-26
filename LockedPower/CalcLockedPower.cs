@@ -10,7 +10,7 @@ using System.Diagnostics;
 namespace LockedPower
 {
     /// <summary>
-    /// 
+    /// Расчет значения невыпускаемой мощности
     /// </summary>
     class CalcLockedPower
     {
@@ -57,6 +57,10 @@ namespace LockedPower
                         reportWs.Cells[counter + 3, 3] = valueParametr[i, j];
                         counter++;
                     }
+                    reportWs.Cells[counter + 3, 3] =
+                        DataSearch.ReserveCalc(reportWs,
+                        counter - valueParametr.GetLength(1));
+                    counter++;
                 }
             }
             catch (ArgumentException e)
