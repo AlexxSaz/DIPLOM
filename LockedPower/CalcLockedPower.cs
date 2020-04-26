@@ -9,12 +9,30 @@ using System.Diagnostics;
 
 namespace LockedPower
 {
+    /// <summary>
+    /// 
+    /// </summary>
     class CalcLockedPower
     {
+        private static ConsoleHelper.SignalHandler signalHandler { get; set; }
 
+        private static void HandleConsoleSignal(ConsoleSignal consoleSignal)
+        {
+            foreach (var process in Process.GetProcessesByName("EXCEL"))
+            {
+                process.Kill();
+            }
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
+            signalHandler += HandleConsoleSignal;
+            ConsoleHelper.SetSignalHandler(signalHandler, true);
+
             Application reportExcel = new Application();
             Workbook reportWb = reportExcel.Workbooks.Open(@"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\Shablon.xlsx");
             Worksheet reportWs = reportWb.Worksheets[1];
@@ -53,11 +71,6 @@ namespace LockedPower
             reportWb = null;
             reportWs = null;
             GC.Collect();
-
-            foreach (var process in Process.GetProcessesByName("EXCEL"))
-            {
-                process.Kill();
-            }
 
             Console.ReadKey();
         }
