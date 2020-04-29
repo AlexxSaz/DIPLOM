@@ -16,9 +16,9 @@ namespace LockedPowerLibrary
         /// <summary>
         /// Получить массив имен из файла
         /// </summary>
-        /// <param name="path">Путь к файлу</param>
+        /// <param name="path">Имя файла, находящегося в ресурсах класса</param>
         /// <returns>Массив имен</returns>
-        private static string[] TextReader(string path)
+        public static string[] TextReader(string path)
         {
             path = @"E:\Programms\С# Progs\DIPLOM\LockedPowerLibrary\Resources\" + path;
 
@@ -145,13 +145,13 @@ namespace LockedPowerLibrary
         }
 
         /// <summary>
-        /// Поиск параметра в шаблоне отчета
+        /// Поиск ячейки по названию параметра
         /// </summary>
         /// <param name="worksheet">Лист отчета</param>
         /// <param name="counter">Строка, после которой ведется поиск</param>
         /// <param name="nameOfParam">Название искомого параметра</param>
-        /// <returns>Значение параметра</returns>
-        private static double SearchValueInShablon(Worksheet worksheet,
+        /// <returns>Адрес ячейки</returns>
+        public static Range SearchParamNameInShablon(Worksheet worksheet,
             int counter, string nameOfParam)
         {
             Range paramRange = worksheet.Cells.Find(nameOfParam,
@@ -162,15 +162,30 @@ namespace LockedPowerLibrary
                 throw new ArgumentException("Нет такой ячейки для расчета резерва!");
             }
 
-            double.TryParse(worksheet.Cells[paramRange.Row,
-                paramRange.Column + 1].Value2.ToString(),
-                out double value);
+            return paramRange;
+        }
+
+        /// <summary>
+        /// Поиск параметра в шаблоне отчета
+        /// </summary>
+        /// <param name="worksheet">Лист отчета</param>
+        /// <param name="counter">Строка, после которой ведется поиск</param>
+        /// <param name="nameOfParam">Название искомого параметра</param>
+        /// <returns>Значение параметра</returns>
+        private static double SearchValueInShablon(Worksheet worksheet,
+            int counter, string nameOfParam)
+        {
+            Range paramRange = SearchParamNameInShablon(worksheet,
+                counter, nameOfParam);
+
+            double value = worksheet.Cells[paramRange.Row,
+                paramRange.Column + 1].Value2;
 
             return value;
         }
 
         /// <summary>
-        /// Расчет резерва мощности
+        /// Расчет резерва мощности в ЭС
         /// </summary>
         /// <param name="worksheet">Лист для расчета</param>
         /// <param name="counter">Строка, после которой ведется поиск</param>
@@ -181,6 +196,31 @@ namespace LockedPowerLibrary
             double valueLoad = SearchValueInShablon(worksheet, counter, "Потребление");
 
             return valueWorkPower - valueLoad;
+        }
+
+        /// <summary>
+        /// Расчет невыпускаемого резерва мощности
+        /// </summary>
+        /// <param name="worksheet">Лист для расчета</param>
+        /// <param name="valueMDP">Значение МДП сечения</param>
+        /// <param name="powerFlow">Переток внешний</param>
+        /// <param name="numberOfSystems">Количество энергосистем перед сечением</param>
+        /// <param name="actualRow">Актуальная строка расчета</param>
+        /// <returns>Значение запертой мощности</returns>
+        public static double LockedPowerCalc(Worksheet worksheet,
+            double valueMDP, double powerFlow,
+            int numberOfSystems, int actualRow)
+        {
+            List<double> valueReserve = new List<double>(numberOfSystems);
+            double valueLP = 0;
+
+            for (int i = 0; i < valueReserve.Capacity; i++)
+            {
+                valueReserve.Add(ReserveCalc(worksheet, actualRow + i * 14));
+                valueLP += valueReserve[i];
+            }
+
+            return valueLP + powerFlow - valueMDP;
         }
     }
 }
