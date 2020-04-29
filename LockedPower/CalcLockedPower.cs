@@ -40,28 +40,47 @@ namespace LockedPower
             reportWs.Name = "Расчет невыпускаемой мощности";
             reportWs.Cells[1, 1] = "Дата создания отчета: " + DateTime.Now.ToString();
 
-            int counter = 0;
+            int rowCounter = 3;
+            int systemCounter = 0;
             try
             {
                 var valueMDP = DataSearch.MDPSearcher(@"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\ppbr(a)_22012020_1.xls", 2);
+                var arrayNameMDP = DataSearch.TextReader("sectionsname.txt");
                 var valueParametr = DataSearch.ParametrsSearcher(@"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\balance10-29-01-2020.xlsx");
 
-                //for (int i = 0; i < valueMDP.Length; i++)
-                //{
-                //    reportWs.Cells[i + 1, 1] = valueMDP[i];
-                //}
+                List<string> nameMDP = new List<string>(arrayNameMDP);
+
                 for (int i = 0; i < valueParametr.GetLength(0); i++)
                 {
+                    ++systemCounter;
                     for (int j = 0; j < valueParametr.GetLength(1); j++)
                     {
-                        reportWs.Cells[counter + 3, 3] = valueParametr[i, j];
-                        counter++;
+                        reportWs.Cells[rowCounter, 3] = valueParametr[i, j];
+                        rowCounter++;
                     }
-                    reportWs.Cells[counter + 3, 3] =
+                    reportWs.Cells[rowCounter, 3] =
                         DataSearch.ReserveCalc(reportWs,
-                        counter - valueParametr.GetLength(1));
-                    counter++;
+                        rowCounter - valueParametr.GetLength(1) + 1);
+                    rowCounter++;
+
+                    foreach (string s in nameMDP)
+                    {
+                        if (reportWs.Cells[rowCounter, 2].Value2 == s)
+                        {
+                            reportWs.Cells[rowCounter, 3] =
+                                valueMDP[nameMDP.IndexOf(s)];
+                            rowCounter++;
+                            reportWs.Cells[rowCounter, 3] = 
+                                DataSearch.LockedPowerCalc(reportWs,
+                                valueMDP[nameMDP.IndexOf(s)], 
+                                nameMDP.IndexOf(s) != 0 ? valueMDP[nameMDP.IndexOf(s) - 1] : 0,
+                                systemCounter, rowCounter - systemCounter * 14);
+                            rowCounter++;
+                            systemCounter = 0;
+                        }
+                    }
                 }
+
             }
             catch (ArgumentException e)
             {
