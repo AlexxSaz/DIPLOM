@@ -46,7 +46,7 @@ namespace LockedPower
             {
                 var valueMDP = DataSearch.MDPSearcher(@"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\ppbr(a)_22012020_1.xls", 2);
                 var arrayNameMDP = DataSearch.TextReader("sectionsname.txt");
-                var valueParametr = DataSearch.ParametrsSearcher(@"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\balance10-29-01-2020.xlsx");
+                var valueParametr = DataSearch.ParametrsSearcher("balance10-29-01-2020.xlsx");
 
                 List<string> nameMDP = new List<string>(arrayNameMDP);
 
@@ -59,8 +59,7 @@ namespace LockedPower
                         rowCounter++;
                     }
                     reportWs.Cells[rowCounter, 3] =
-                        DataSearch.ReserveCalc(reportWs,
-                        rowCounter - valueParametr.GetLength(1) + 1);
+                        DataCalc.ReserveCalc(i, valueParametr);
                     rowCounter++;
 
                     foreach (string s in nameMDP)
@@ -71,10 +70,10 @@ namespace LockedPower
                                 valueMDP[nameMDP.IndexOf(s)];
                             rowCounter++;
                             reportWs.Cells[rowCounter, 3] = 
-                                DataSearch.LockedPowerCalc(reportWs,
+                                DataCalc.LockedPowerCalc(i, valueParametr,
                                 valueMDP[nameMDP.IndexOf(s)], 
                                 nameMDP.IndexOf(s) != 0 ? valueMDP[nameMDP.IndexOf(s) - 1] : 0,
-                                systemCounter, rowCounter - systemCounter * 14);
+                                systemCounter);
                             rowCounter++;
                             systemCounter = 0;
                         }
