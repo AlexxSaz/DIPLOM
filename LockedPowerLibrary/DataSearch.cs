@@ -103,6 +103,8 @@ namespace LockedPowerLibrary
         /// <returns>Значение рассматриваемого параметра</returns>
         public static double[,] ParametrsSearcher(string filePath)
         {
+            filePath = @"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\" + filePath;
+
             Application excelFile = WorkbookBaseData(filePath, "Баланс мощности");
             var energySystem = TextReader("EnergySystems.txt");
             var parametr = TextReader("NameOfParameters.txt");
@@ -110,11 +112,14 @@ namespace LockedPowerLibrary
 
             for (int i = 0; i < energySystem.Length; i++)
             {
-                Range rangeOfSystem = excelFile.Cells.Find(energySystem[i], Type.Missing, XlFindLookIn.xlValues, XlLookAt.xlWhole);
+                Range rangeOfSystem = excelFile.Cells.Find(energySystem[i],
+                    Type.Missing, XlFindLookIn.xlValues, XlLookAt.xlWhole);
 
                 for (int j = 0; j < parametr.Length; j++)
                 {
-                    Range rangeOfParam = excelFile.Cells.Find(parametr[j], Type.Missing, XlFindLookIn.xlValues, XlLookAt.xlWhole);
+                    Range rangeOfParam = excelFile.Cells.Find(parametr[j],
+                        Type.Missing, XlFindLookIn.xlValues,
+                        XlLookAt.xlWhole);
                     if (rangeOfParam == null || rangeOfSystem == null)
                     {
                         throw new ArgumentException("Нет такой ячейки!");
@@ -123,7 +128,8 @@ namespace LockedPowerLibrary
                     Range rngOfParamValue = excelFile.Cells[rangeOfSystem.Row,
                         rangeOfParam.Column];
 
-                    if (double.TryParse(rngOfParamValue.Value2.ToString(), out double value))
+                    if (double.TryParse(rngOfParamValue.Value2.ToString(),
+                        out double value))
                     {
                         paramValue[i, j] = Math.Round(value, 2);
                     }
@@ -166,7 +172,7 @@ namespace LockedPowerLibrary
         }
 
         /// <summary>
-        /// Поиск параметра в шаблоне отчета
+        /// Поиск ячейки параметра в шаблоне отчета
         /// </summary>
         /// <param name="worksheet">Лист отчета</param>
         /// <param name="counter">Строка, после которой ведется поиск</param>
@@ -185,42 +191,29 @@ namespace LockedPowerLibrary
         }
 
         /// <summary>
-        /// Расчет резерва мощности в ЭС
+        /// Поиск параметра в массиве данных
         /// </summary>
-        /// <param name="worksheet">Лист для расчета</param>
-        /// <param name="counter">Строка, после которой ведется поиск</param>
-        /// <returns>Значение резерва мощности в ЭС</returns>
-        public static double ReserveCalc(Worksheet worksheet, int counter)
+        /// <param name="numberOfEnergySystem">Номер рассматриваемой ЭС</param>
+        /// <param name="parametersOfEsystem">Массив параметров для всех ЭС</param>
+        /// <param name="nameOfParam">Имя искомого параметра</param>
+        /// <returns>Значение искомого параметра</returns>
+        internal static double SearchParamValue(int numberOfEnergySystem, double[,] parametersOfEsystem,
+            string nameOfParam)
         {
-            double valueWorkPower = SearchValueInShablon(worksheet, counter, "Рабочая мощность");
-            double valueLoad = SearchValueInShablon(worksheet, counter, "Потребление");
+            var parametersName = TextReader("nameofparameters.txt");
 
-            return valueWorkPower - valueLoad;
-        }
-
-        /// <summary>
-        /// Расчет невыпускаемого резерва мощности
-        /// </summary>
-        /// <param name="worksheet">Лист для расчета</param>
-        /// <param name="valueMDP">Значение МДП сечения</param>
-        /// <param name="powerFlow">Переток внешний</param>
-        /// <param name="numberOfSystems">Количество энергосистем перед сечением</param>
-        /// <param name="actualRow">Актуальная строка расчета</param>
-        /// <returns>Значение запертой мощности</returns>
-        public static double LockedPowerCalc(Worksheet worksheet,
-            double valueMDP, double powerFlow,
-            int numberOfSystems, int actualRow)
-        {
-            List<double> valueReserve = new List<double>(numberOfSystems);
-            double valueLP = 0;
-
-            for (int i = 0; i < valueReserve.Capacity; i++)
+            for (int i = 0; i < parametersName.Length; i++)
             {
-                valueReserve.Add(ReserveCalc(worksheet, actualRow + i * 14));
-                valueLP += valueReserve[i];
+                if (nameOfParam == parametersName[i])
+                {
+                    double value = parametersOfEsystem[numberOfEnergySystem, i];
+                    return value;
+                }
             }
 
-            return valueLP + powerFlow - valueMDP;
+            throw new ArgumentException("Параметр " + nameOfParam +
+                " энергосистемы номер " + numberOfEnergySystem + 1 +
+                " не найден!");
         }
     }
 }
