@@ -63,26 +63,6 @@ namespace LockedPower.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] balance10_29_01_2020 {
-            get {
-                object obj = ResourceManager.GetObject("balance10_29_01_2020", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] ppbr_a__22012020_1 {
-            get {
-                object obj = ResourceManager.GetObject("ppbr_a__22012020_1", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] Shablon {
             get {
                 object obj = ResourceManager.GetObject("Shablon", resourceCulture);

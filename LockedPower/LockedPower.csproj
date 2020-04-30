@@ -55,7 +55,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Resources\balance10-29-01-2020.xlsx" />
+    <None Include="Resources\balance10-04-03-2020.xlsx" />
+    <None Include="Resources\ppbr%28a%29_04032020_1.xls" />
     <None Include="Resources\ppbr%28a%29_22012020_1.xls" />
     <None Include="Resources\Shablon.xlsx" />
   </ItemGroup>

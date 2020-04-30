@@ -118,12 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="balance10_29_01_2020" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\balance10-29-01-2020.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="ppbr_a__22012020_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ppbr(a)_22012020_1.xls;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="Shablon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Shablon.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

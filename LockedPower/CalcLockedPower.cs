@@ -14,8 +14,15 @@ namespace LockedPower
     /// </summary>
     class CalcLockedPower
     {
+        /// <summary>
+        /// 
+        /// </summary>
         private static ConsoleHelper.SignalHandler signalHandler { get; set; }
 
+        /// <summary>
+        /// Килл процесса EXCEL
+        /// </summary>
+        /// <param name="consoleSignal">Сигнал, поступающий от консоли</param>
         private static void HandleConsoleSignal(ConsoleSignal consoleSignal)
         {
             foreach (var process in Process.GetProcessesByName("EXCEL"))
@@ -44,9 +51,9 @@ namespace LockedPower
             int systemCounter = 0;
             try
             {
-                var valueMDP = DataSearch.MDPSearcher(@"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\ppbr(a)_22012020_1.xls", 2);
+                var valueMDP = DataSearch.MDPSearcher(@"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\ppbr(a)_04032020_1.xls", 6);
                 var arrayNameMDP = DataSearch.TextReader("sectionsname.txt");
-                var valueParametr = DataSearch.ParametrsSearcher("balance10-29-01-2020.xlsx");
+                var valueParametr = DataSearch.ParametrsSearcher("balance10-04-03-2020.xlsx");
 
                 List<string> nameMDP = new List<string>(arrayNameMDP);
 
@@ -69,9 +76,9 @@ namespace LockedPower
                             reportWs.Cells[rowCounter, 3] =
                                 valueMDP[nameMDP.IndexOf(s)];
                             rowCounter++;
-                            reportWs.Cells[rowCounter, 3] = 
+                            reportWs.Cells[rowCounter, 3] =
                                 DataCalc.LockedPowerCalc(i, valueParametr,
-                                valueMDP[nameMDP.IndexOf(s)], 
+                                valueMDP[nameMDP.IndexOf(s)],
                                 nameMDP.IndexOf(s) != 0 ? valueMDP[nameMDP.IndexOf(s) - 1] : 0,
                                 systemCounter);
                             rowCounter++;
@@ -79,20 +86,22 @@ namespace LockedPower
                         }
                     }
                 }
-
+                reportWb.SaveAs(@"C:\Users\Александр\Desktop\МусорницаОтчетов\2.xlsx");
             }
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.Message);
+                Console.WriteLine("Расчет не выполнен!");
             }
-
-            reportWb.SaveAs(@"C:\Users\Александр\Desktop\МусорницаОтчетов\2.xlsx");
-            reportWb.Close(false);
-            reportExcel.Quit();
-            reportExcel = null;
-            reportWb = null;
-            reportWs = null;
-            GC.Collect();
+            finally
+            {
+                reportWb.Close(false);
+                reportExcel.Quit();
+                reportExcel = null;
+                reportWb = null;
+                reportWs = null;
+                GC.Collect();
+            }
 
             Console.ReadKey();
         }
