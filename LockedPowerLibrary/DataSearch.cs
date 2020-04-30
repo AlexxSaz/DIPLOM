@@ -45,7 +45,7 @@ namespace LockedPowerLibrary
         {
             Application excelFile = new Application();
             Workbook workbook = excelFile.Workbooks.Open(path);
-            Worksheet worksheet = workbook.Worksheets[nameOfList];
+            Worksheet worksheet = workbook.Sheets.Item[nameOfList];
 
             return excelFile;
         }
@@ -59,30 +59,37 @@ namespace LockedPowerLibrary
         /// <returns>Искомое значение МДП</returns>
         public static int[] MDPSearcher(string filePath, int hour)
         {
-            Application excelFile = WorkbookBaseData(filePath, "8 КС (2)");
+            var sheetName = new string[] { "8 КС (2)", "8 КС" };
             var section = TextReader("SectionsName.txt");
             var valueMDP = new int[section.Length];
+            var excelFile = WorkbookBaseData(filePath, sheetName[0]);
 
-            for (int i = 0; i < section.Length; i++)
+            for (int j = 0; j < sheetName.Length; j++)
             {
-                Range rangeOfSection = excelFile.Cells.Find(section[i], Type.Missing,
-                    XlFindLookIn.xlValues, XlLookAt.xlWhole);
-                if (rangeOfSection == null)
-                {
-                    throw new ArgumentException("Нет такой ячейки!");
-                }
+                excelFile.ActiveWorkbook.Sheets[sheetName[j]].Select();
 
-                Range rangeOfMDP = excelFile.Cells[rangeOfSection.Row + 1 + hour,
-                    rangeOfSection.Column];
+                for (int i = 0; i < section.Length; i++)
+                {
+                    Range rangeOfSection = excelFile.Cells.Find(section[i], Type.Missing,
+                        XlFindLookIn.xlValues, XlLookAt.xlWhole);
 
-                if (int.TryParse(rangeOfMDP.Value2.ToString(), out int value))
-                {
-                    valueMDP[i] = value;
-                }
-                else
-                {
-                    throw new ArgumentException("Для сечения " + section[i] +
-                        " значение в ячейке не является числом");
+                    if (rangeOfSection == null)
+                    {
+                        continue;
+                    }
+
+                    Range rangeOfMDP = excelFile.Cells[rangeOfSection.Row + 1 + hour,
+                        rangeOfSection.Column];
+
+                    if (int.TryParse(rangeOfMDP.Value2.ToString(), out int value))
+                    {
+                        valueMDP[i] = value;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Для сечения " + section[i] +
+                            " значение в ячейке не является числом");
+                    }
                 }
             }
 
@@ -122,7 +129,7 @@ namespace LockedPowerLibrary
                         XlLookAt.xlWhole);
                     if (rangeOfParam == null || rangeOfSystem == null)
                     {
-                        throw new ArgumentException("Нет такой ячейки!");
+                        throw new ArgumentException("Нет такой ячейки! " + energySystem[i] + " " + parametr[j]);
                     }
 
                     Range rngOfParamValue = excelFile.Cells[rangeOfSystem.Row,
