@@ -51,5 +51,22 @@ namespace LockedPowerLibrary
 
             return valueLP + powerFlow - valueMDP;
         }
+
+        /// <summary>
+        /// Суммирование всех значений запертой мощности
+        /// </summary>
+        /// <param name="listOfLPValue">Значения запертой мощности</param>
+        /// <returns>Итоговая величина запертой мощности</returns>
+        public static double SumLockedPower(List<double> listOfLPValue)
+        {
+            double sumOfLPValue = 0;
+
+            foreach (var value in listOfLPValue)
+            {
+                sumOfLPValue += value;
+            }
+
+            return sumOfLPValue;
+        }
     }
 }

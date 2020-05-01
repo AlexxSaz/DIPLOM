@@ -41,21 +41,31 @@ namespace LockedPower
             ConsoleHelper.SetSignalHandler(signalHandler, true);
 
             Application reportExcel = new Application();
-            Workbook reportWb = reportExcel.Workbooks.Open(@"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\Shablon.xlsx");
+            Workbook reportWb = reportExcel.Workbooks.Open(
+                @"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\Shablon.xlsx");
             Worksheet reportWs = reportWb.Worksheets[1];
+            var pathToSave = @"C:\Users\Александр\Desktop\МусорницаОтчетов\";
+
+            Console.Write("Введите час прохождения максимума (от 1 до 24): ");
+            int hourOfMax = int.Parse(Console.ReadLine());
 
             reportWs.Name = "Расчет невыпускаемой мощности";
-            reportWs.Cells[1, 1] = "Дата создания отчета: " + DateTime.Now.ToString();
+            reportWs.Cells[1, 1] = "Дата создания отчета: " +
+                DateTime.Now.ToString();
 
             int rowCounter = 3;
             int systemCounter = 0;
             try
             {
-                var valueMDP = DataSearch.MDPSearcher(@"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\ppbr(a)_04032020_1.xls", 6);
+                var valueMDP = DataSearch.MDPSearcher(
+                    @"E:\Programms\С# Progs\DIPLOM\LockedPower\Resources\ppbr(a)_04032020_1.xls",
+                    hourOfMax);
                 var arrayNameMDP = DataSearch.TextReader("sectionsname.txt");
-                var valueParametr = DataSearch.ParametrsSearcher("balance10-04-03-2020.xlsx");
+                var valueParametr = DataSearch.ParametrsSearcher(
+                    "balance10-04-03-2020.xlsx");
 
-                List<string> nameMDP = new List<string>(arrayNameMDP);
+                var nameMDP = new List<string>(arrayNameMDP);
+                var lisOfLPValue = new List<double>();
 
                 for (int i = 0; i < valueParametr.GetLength(0); i++)
                 {
@@ -76,17 +86,25 @@ namespace LockedPower
                             reportWs.Cells[rowCounter, 3] =
                                 valueMDP[nameMDP.IndexOf(s)];
                             rowCounter++;
-                            reportWs.Cells[rowCounter, 3] =
+                            lisOfLPValue.Add(
                                 DataCalc.LockedPowerCalc(i, valueParametr,
                                 valueMDP[nameMDP.IndexOf(s)],
-                                nameMDP.IndexOf(s) != 0 ? valueMDP[nameMDP.IndexOf(s) - 1] : 0,
-                                systemCounter);
+                                nameMDP.IndexOf(s) != 0 ?
+                                valueMDP[nameMDP.IndexOf(s) - 1] : 0,
+                                systemCounter));
+                            reportWs.Cells[rowCounter, 3] =
+                                lisOfLPValue[nameMDP.IndexOf(s)];
                             rowCounter++;
                             systemCounter = 0;
                         }
                     }
                 }
-                reportWb.SaveAs(@"C:\Users\Александр\Desktop\МусорницаОтчетов\2.xlsx");
+                reportWs.Cells[3, 10] =
+                    DataCalc.SumLockedPower(lisOfLPValue);
+
+                reportWb.SaveAs(pathToSave +
+                    DateTime.Today.ToString("MMM") +
+                    DateTime.Today.Year.ToString() + ".xlsx");
             }
             catch (ArgumentException e)
             {
