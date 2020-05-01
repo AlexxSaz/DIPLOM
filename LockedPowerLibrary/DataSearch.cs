@@ -87,8 +87,9 @@ namespace LockedPowerLibrary
                     }
                     else
                     {
-                        throw new ArgumentException("Для сечения " + section[i] +
-                            " значение в ячейке не является числом");
+                        throw new ArgumentException($"Для сечения " +
+                            $"{section[i]} " +
+                            $"значение в ячейке не является числом");
                     }
                 }
             }
@@ -129,7 +130,8 @@ namespace LockedPowerLibrary
                         XlLookAt.xlWhole);
                     if (rangeOfParam == null || rangeOfSystem == null)
                     {
-                        throw new ArgumentException("Нет такой ячейки! " + energySystem[i] + " " + parametr[j]);
+                        throw new ArgumentException($"Нет такой ячейки!" +
+                            $" {energySystem[i]} {parametr[j]}");
                     }
 
                     Range rngOfParamValue = excelFile.Cells[rangeOfSystem.Row,
@@ -142,9 +144,9 @@ namespace LockedPowerLibrary
                     }
                     else
                     {
-                        throw new ArgumentException("Для ЭС " + energySystem[i] +
-                            " значение в ячейке параметра " + parametr[j] +
-                            " не является числом");
+                        throw new ArgumentException($"Для ЭС " +
+                            $"{energySystem[i]} значение в ячейке параметра" +
+                            $" {parametr[j]} не является числом");
                     }
                 }
             }
@@ -218,9 +220,9 @@ namespace LockedPowerLibrary
                 }
             }
 
-            throw new ArgumentException("Параметр " + nameOfParam +
-                " энергосистемы номер " + numberOfEnergySystem + 1 +
-                " не найден!");
+            throw new ArgumentException($"Параметр {nameOfParam}" +
+                $" энергосистемы номер {numberOfEnergySystem + 1}" +
+                $" не найден!");
         }
     }
 }
